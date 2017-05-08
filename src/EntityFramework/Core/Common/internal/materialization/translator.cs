@@ -421,7 +421,8 @@ namespace System.Data.Entity.Core.Common.Internal.Materialization
                 }
                 else
                 {
-                    var constructor = DelegateFactory.GetConstructorForType(clrType);
+                    var overrideType = GetOverrideType(clrType);
+                    var constructor = DelegateFactory.GetConstructorForType(overrideType);
                     constructEntity = Expression.MemberInit(Expression.New(constructor), propertyBindings);
                     actualType = clrType;
                 }
@@ -1329,6 +1330,17 @@ namespace System.Data.Entity.Core.Common.Internal.Materialization
             #endregion
 
             #region Helper methods
+
+            private Type GetOverrideType(Type clrType)
+            {
+                Type result = clrType;
+                Type typeOverride;
+                if (TypeMapperOverrideProvider.TryGetMap(result, out typeOverride)) {
+                    result = typeOverride;
+                }
+                return result;
+            }
+
 
             // <summary>
             // Allocates a slot in 'Shaper.State' which can be used as storage for

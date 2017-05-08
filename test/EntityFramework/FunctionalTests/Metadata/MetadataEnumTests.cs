@@ -401,7 +401,7 @@ namespace System.Data.Entity.Metadata
 
         private static void RunInvalidEnumTypeFacetTests(Action<XDocument, string, string> updateCsdl)
         {
-            for (int i = 0; i < invalidEnumPropertyFacets.Length >> 1; i++)
+            for (int i = 0; i < (invalidEnumPropertyFacets.Length >> 1); i++)
             {
                 var enumCSDL = XDocument.Parse(enumCsdl);
                 updateCsdl(enumCSDL, invalidEnumPropertyFacets[i, 0], invalidEnumPropertyFacets[i, 1]);
@@ -430,7 +430,7 @@ namespace System.Data.Entity.Metadata
             funcImportInvalidEnumParamFacets[7, 0] = "DefaultValue";
             funcImportInvalidEnumParamFacets[7, 1] = "34";
 
-            for (int i = 0; i < funcImportInvalidEnumParamFacets.Length >> 1; i++)
+            for (int i = 0; i < (funcImportInvalidEnumParamFacets.Length >> 1); i++)
             {
                 var enumCSDL = XDocument.Parse(enumCsdl);
                 enumCSDL.Root

@@ -250,8 +250,11 @@ namespace System.Data.Entity.Core.Objects
         {
             var identityType = wrappedEntity.IdentityType;
             var actualType = wrappedEntity.Entity.GetType();
-            if (identityType != actualType)
-            {
+            var overridenIdentityType = identityType;
+
+            TypeMapperOverrideProvider.TryGetMap(identityType, out overridenIdentityType);
+
+            if (identityType != actualType && overridenIdentityType != actualType) {
                 var entityType = MetadataWorkspace.GetItem<ClrEntityType>(identityType.FullNameWithNesting(), DataSpace.OSpace);
                 var proxyTypeInfo = EntityProxyFactory.GetProxyType(entityType, MetadataWorkspace);
                 if (proxyTypeInfo == null

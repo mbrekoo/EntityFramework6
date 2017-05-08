@@ -805,56 +805,27 @@ namespace System.Data.Entity.Core.Objects.DataClasses
             Debug.Assert(RelationshipNavigation != null, "null RelationshipNavigation");
 
             // If the navigation property doesn't exist (e.g. unidirectional prop), then it can't contain the entity.
-            if (!TargetAccessor.HasProperty)
-            {
+            if (!TargetAccessor.HasProperty) {
                 return false;
             }
 
-            var loadingState = DisableLazyLoading();
-            try
-            {
-                var value = WrappedOwner.GetNavigationPropertyValue(this);
+            IEnumerable value = WrappedOwner.GetNavigationPropertyValue(this) as IEnumerable;
 
-                if (value != null)
-                {
-                    // It would be good to be able to always use ICollection<T>.Contains here. The problem
-                    // is if the entity has overridden Equals/GetHashcode such that it makes use of the
-                    // primary key value then this will break when an Added object with an Identity key that
-                    // is contained in a navigation collection has its primary key set after it is saved.
-                    // Therefore, we only use this optimization if we know for sure that the nav prop is
-                    // using reference equality or if neither Equals or GetHashCode are overridden.
-                    //
-                    // Also, note that for most EF code to work the navigation property must be an ICollection.
-                    // However, some limited code paths work with IEnumerable, so we check for IEnumerable here
-                    // instead of ICollection to avoid breaking those code paths. If it's not IEnumerable, then
-                    // the message still tells people to use ICollection since pointing them to use IEnumerable
-                    // will likely cause more confusion and other errors as they continue development.
-                    var enumerable = value as IEnumerable<TEntity>;
-                    if (enumerable == null)
-                    {
-                        throw new EntityException(
-                            Strings.ObjectStateEntry_UnableToEnumerateCollection(
-                                TargetAccessor.PropertyName, WrappedOwner.Entity.GetType().FullName));
+            if (value != null) {
+                if (!(value is IEnumerable)) {
+                    throw new EntityException(Strings.ObjectStateEntry_UnableToEnumerateCollection(
+                                            TargetAccessor.PropertyName, WrappedOwner.Entity.GetType().FullName));
+                }
+
+                // 
+                foreach (object o in value) {
+                    if (Equals(o, wrapper.Entity)) {
+                        return true;
                     }
-
-                    var hashSet = value as HashSet<TEntity>;
-                    if (!wrapper.OverridesEqualsOrGetHashCode
-                        || (hashSet != null
-                            && hashSet.Comparer is ObjectReferenceEqualityComparer))
-                    {
-                        // Contains extension method will short-circuit to ICollection.Contains if possible
-                        return enumerable.Contains((TEntity)wrapper.Entity);
-                    }
-
-                    return enumerable.Any(o => ReferenceEquals(o, wrapper.Entity));
                 }
             }
-            finally
-            {
-                ResetLazyLoading(loadingState);
-            }
-
             return false;
+
         }
 
         internal override void VerifyNavigationPropertyForAdd(IEntityWrapper wrapper)
