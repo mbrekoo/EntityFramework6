@@ -988,13 +988,13 @@ function Build-Project($project)
 
 function Get-EntityFrameworkInstallPath($project)
 {
-    $package = Get-Package -ProjectName $project.FullName | ?{ $_.Id -eq 'EntityFramework' }
+    $package = Get-Package -ProjectName $project.FullName | ?{ $_.Id -eq 'Apekool.EntityFramework' }
 
     if (!$package)
     {
         $projectName = $project.Name
 
-        throw "The EntityFramework package is not installed on project '$projectName'."
+        throw "The Apekool.EntityFramework package is not installed on project '$projectName'."
     }
     
     return Get-PackageInstallPath $package

@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <package xmlns="http://schemas.microsoft.com/packaging/2010/07/nuspec.xsd">
   <metadata schemaVersion="2">
-    <id>EntityFramework</id>
+    <id>Apekool.EntityFramework</id>
     <version>$NuGetPackageVersion$</version>
-    <title>EntityFramework</title>
+    <title>Apekool.EntityFramework</title>
     <iconUrl>http://go.microsoft.com/fwlink/?LinkID=386613</iconUrl>
     <authors>Microsoft</authors>
     <owners>Microsoft</owners>
