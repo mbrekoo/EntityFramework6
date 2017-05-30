@@ -108,12 +108,12 @@ namespace System.Data.Entity.Core.Metadata.Edm
                         }
                         else
                         {
-                            // at this point there is already a Clr Type that is structurally matched to this CSpace type, we throw exception
-                            var previousOSpaceType = SessionData.CspaceToOspace[cspaceType];
-                            SessionData.EdmItemErrors.Add(
-                                new EdmItemError(
-                                    Strings.Validator_OSpace_Convention_AmbiguousClrType(
-                                        cspaceType.Name, previousOSpaceType.ClrType.FullName, type.FullName)));
+                            //// at this point there is already a Clr Type that is structurally matched to this CSpace type, we throw exception
+                            //var previousOSpaceType = SessionData.CspaceToOspace[cspaceType];
+                            //SessionData.EdmItemErrors.Add(
+                            //    new EdmItemError(
+                            //        Strings.Validator_OSpace_Convention_AmbiguousClrType(
+                            //            cspaceType.Name, previousOSpaceType.ClrType.FullName, type.FullName)));
                         }
                     }
                 }

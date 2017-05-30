@@ -269,32 +269,37 @@ namespace System.Data.Entity.Core.Metadata.Edm
             {
                 globalItems.Add(edmType);
 
-                var cspaceTypeName = "";
-                try
-                {
-                    // Also populate the ocmapping information
-                    if (Helper.IsEntityType(edmType))
+                if (edmType.ClrType == null || !edmType.ClrType.Assembly.IsDynamic) {
+
+                    var cspaceTypeName = "";
+                    try
                     {
-                        cspaceTypeName = ((ClrEntityType)edmType).CSpaceTypeName;
-                        _ocMapping.Add(cspaceTypeName, edmType);
+
+                        // Also populate the ocmapping information
+                        if (Helper.IsEntityType(edmType))
+                        {
+                            cspaceTypeName = ((ClrEntityType)edmType).CSpaceTypeName;
+                            _ocMapping.Add(cspaceTypeName, edmType);
+                        }
+                        else if (Helper.IsComplexType(edmType))
+                        {
+                            cspaceTypeName = ((ClrComplexType)edmType).CSpaceTypeName;
+                            _ocMapping.Add(cspaceTypeName, edmType);
+                        }
+                        else if (Helper.IsEnumType(edmType))
+                        {
+                            cspaceTypeName = ((ClrEnumType)edmType).CSpaceTypeName;
+                            _ocMapping.Add(cspaceTypeName, edmType);
+                        }
+                        // for the rest of the types like a relationship type, we do not have oc mapping, 
+                        // so we don't keep that information
                     }
-                    else if (Helper.IsComplexType(edmType))
+                    catch (ArgumentException e)
                     {
-                        cspaceTypeName = ((ClrComplexType)edmType).CSpaceTypeName;
-                        _ocMapping.Add(cspaceTypeName, edmType);
+                        throw new MappingException(Strings.Mapping_CannotMapCLRTypeMultipleTimes(cspaceTypeName), e);
                     }
-                    else if (Helper.IsEnumType(edmType))
-                    {
-                        cspaceTypeName = ((ClrEnumType)edmType).CSpaceTypeName;
-                        _ocMapping.Add(cspaceTypeName, edmType);
-                    }
-                    // for the rest of the types like a relationship type, we do not have oc mapping, 
-                    // so we don't keep that information
                 }
-                catch (ArgumentException e)
-                {
-                    throw new MappingException(Strings.Mapping_CannotMapCLRTypeMultipleTimes(cspaceTypeName), e);
-                }
+
             }
 
             // Create a new ObjectItemCollection and add all the global items to it. 

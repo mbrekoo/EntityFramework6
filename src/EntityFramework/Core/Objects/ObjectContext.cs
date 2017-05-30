@@ -2265,12 +2265,17 @@ namespace System.Data.Entity.Core.Objects
             // Register the assembly so the type information will be sure to be loaded in metadata
             MetadataWorkspace.ImplicitLoadAssemblyForType(entityCLRType, Assembly.GetCallingAssembly());
 
+            Type typeToUse;
+            if (!TypeMapperOverrideProvider.TryGetByValue(entityCLRType, out typeToUse)) {
+                typeToUse = entityCLRType;
+            }
+            
             TypeUsage entityTypeUsage = null;
-            if (!Perspective.TryGetType(entityCLRType, out entityTypeUsage)
+            if (!Perspective.TryGetType(typeToUse, out entityTypeUsage)
                 || !TypeSemantics.IsEntityType(entityTypeUsage))
             {
-                Debug.Assert(entityCLRType != null, "The type cannot be null.");
-                throw new InvalidOperationException(Strings.ObjectContext_NoMappingForEntityType(entityCLRType.FullName));
+                Debug.Assert(typeToUse != null, "The type cannot be null.");
+                throw new InvalidOperationException(Strings.ObjectContext_NoMappingForEntityType(typeToUse.FullName));
             }
 
             Debug.Assert(entityTypeUsage != null, "entityTypeUsage is null");

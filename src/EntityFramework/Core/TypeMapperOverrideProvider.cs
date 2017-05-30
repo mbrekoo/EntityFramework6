@@ -54,6 +54,40 @@ namespace System.Data.Entity.Core
         }
 
         /// <summary>
+        /// Checks if a mapping exists for the specified base type
+        /// </summary>
+        /// <param name="from"></param>
+        /// <returns></returns>
+        public static bool HasMap(Type from)
+        {
+            lock (_lock) {
+                return _mappings.ContainsKey(from);
+            }
+        }
+
+        /// <summary>
+        /// Tries to get the mapping by the specified value type
+        /// </summary>
+        /// <param name="to"></param>
+        /// <param name="from"></param>
+        /// <returns></returns>
+        public static bool TryGetByValue(Type to, out Type from)
+        {
+            lock (_lock) {
+
+                foreach (var item in _mappings) {
+                    if (item.Value == to) {
+                        from = item.Key;
+                        return true;
+                    }
+                }
+
+                from = null;
+                return false;
+            }
+        }
+
+        /// <summary>
         /// Tries to get the mapping for the specified entity type
         /// </summary>
         /// <param name="from"></param>
@@ -61,7 +95,21 @@ namespace System.Data.Entity.Core
         /// <returns></returns>
         public static bool TryGetMap(Type from, out Type to)
         {
-            return _mappings.TryGetValue(from, out to);
+            lock (_lock) {
+                return _mappings.TryGetValue(from, out to);
+            }
+
+        }
+
+        /// <summary>
+        /// Returns a dictionary of all current mappings
+        /// </summary>
+        /// <returns></returns>
+        public static Dictionary<Type,Type> GetAllMappings()
+        {
+            lock (_lock) {
+                return _mappings.ToDictionary(x => x.Key, y => y.Value);
+            }
         }
 
     }
